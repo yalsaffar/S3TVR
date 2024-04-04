@@ -1,0 +1,9 @@
+Capstone.pdf
+__pycache__/
+.vscode/
+audio_segments/
+results/
+xtts_fine_tune/old_man_segments/
+thesis2.drawio.png
+metrics/originals_en/
+metrics/originals_es/
