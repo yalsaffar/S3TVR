@@ -4,9 +4,12 @@ import wave
 import webrtcvad
 import pyaudio
 import os
+import librosa
+import numpy as np
 from models.nllb import nllb_translate
-from models.TTS_utils import tts_mutli_process
+from models.TTS_utils import append_text_order
 from models.parakeet import parakeet_ctc_process
+from models.es_fastconformer import stt_es_process
 from concurrent.futures import ThreadPoolExecutor
 import time
 from models.noise_red import noise_reduction
@@ -53,39 +56,71 @@ def vad_collector(sample_rate, frame_duration_ms, padding_duration_ms, vad, fram
         yield b''.join([f.bytes for f in voiced_frames])
 
 
-
+def is_segment_empty(file_path):
+    audio, _ = librosa.load(file_path)
+    rms = librosa.feature.rms(y=audio)  # Pass the audio data as an argument
+    rms_mean = np.mean(rms)
+    print(rms_mean)
+    
+    if rms_mean < 0.015:
+        return True
+    else:
+        return False
 
 # ...
 
-def process_segment(parakeet, model_nllb, tokinizer_nllb, tts_model, path_segements, path_results):
+def process_segment(asr_model, model_nllb, tokenizer_nllb, path_segments, path_results, target_lang, order):
     print("Processing segment...")
-    start_time1 = time.time()
-
-    # separate_audio(noise_model, path_segements, path_segements)
-    noise_reduction(path_segements, path_segements)
-    end_time1 = time.time()
-    print("Noise removal time:", end_time1 - start_time1)
-    print("Noise removed.")
-    start_time2 = time.time()
-    transcription = parakeet_ctc_process(parakeet, path_segements)
-    print("Transcription:", transcription[0])
-    end_time2 = time.time()
-    print("Transcription time:", end_time2 - start_time2)
-    if transcription == " " or transcription == "":
+    if is_segment_empty(path_segments):
+        print("No speech detected.")
+        # remove the empty segment
+        os.remove(path_segments)
+        return
+    # Noise Reduction
+    start_time = time.time()
+    noise_reduction(path_segments, path_segments)
+    print("Noise removed. Time:", time.time() - start_time)
+    
+    # Transcription
+    transcription = transcribe(asr_model, path_segments, target_lang)
+    if not transcription.strip():
         print("No speech detected.")
         return
-    else:
-        start_time3 = time.time()
-        translation = nllb_translate(model_nllb, tokinizer_nllb, transcription[0], "spanish")
-        print("Translation:", translation)
-        end_time3 = time.time()
-        print("Translation time:", end_time3 - start_time3)
-        print("Processing TTS...")
-        start_time4 = time.time()
-        tts_mutli_process(tts_model, translation, path_segements, "es", path_results)
-        print("TTS done.")
-        end_time4 = time.time()
-        print("TTS time:", end_time4 - start_time4)
+    
+    # Translation
+    translation = translate(model_nllb, tokenizer_nllb, transcription, target_lang)
+    
+    # Text-to-Speech
+    # process_tts(tts_model, translation, path_segments, target_lang, path_results)
+    append_text_order("text.json",transcription, order, path_segments, path_results)
+def transcribe(asr_model, path_segments, target_lang):
+    start_time = time.time()
+    transcription_func = {
+        "spanish": parakeet_ctc_process,
+        "english": stt_es_process
+    }[target_lang]
+    transcription = transcription_func(asr_model, path_segments)
+    print("Transcription:", transcription[0])
+    print("Transcription time:", time.time() - start_time)
+    return transcription[0]
+
+def translate(model_nllb, tokenizer_nllb, text, target_lang):
+    print("Processing translation...")
+    start_time = time.time()
+    translation = nllb_translate(model_nllb, tokenizer_nllb, text, target_lang)
+    print("Translation:", translation)
+    print("Translation time:", time.time() - start_time)
+    return translation
+
+"""
+def process_tts(tts_model, text, source_path, target_lang, result_path):
+    print("Processing TTS...")
+    start_time = time.time()
+    lang_code = {"spanish": "es", "english": "en"}[target_lang]
+    tts_mutli_process(tts_model, text, source_path, lang_code, result_path)
+    print("TTS done. Time:", time.time() - start_time)
+"""
+
 
     
 
@@ -95,7 +130,7 @@ def process_segment(parakeet, model_nllb, tokinizer_nllb, tts_model, path_segeme
 
 
 
-def stream(parakeet, model_nllb, tokinizer_nllb, tts_model):
+def stream(asr_model, model_nllb, tokinizer_nllb, source_lang, target_lang):
     FORMAT = pyaudio.paInt16
     CHANNELS = 1
     RATE = 16000
@@ -127,7 +162,7 @@ def stream(parakeet, model_nllb, tokinizer_nllb, tts_model):
             wf.setframerate(RATE)
             wf.writeframes(segment)
         
-        executor.submit(process_segment, parakeet, model_nllb, tokinizer_nllb, tts_model, path_segements,path_results)
+        executor.submit(process_segment, asr_model, model_nllb, tokinizer_nllb, path_segements,path_results, target_lang, i)
 
     stream.stop_stream()
     stream.close()
