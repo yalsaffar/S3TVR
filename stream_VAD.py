@@ -69,7 +69,7 @@ def is_segment_empty(file_path):
 
 # ...
 
-def process_segment(asr_model, model_nllb, tokenizer_nllb, path_segments, path_results, target_lang, order):
+def process_segment(asr_model, model_nllb, tokenizer_nllb, path_segments, path_results, target_lang, order, json_path_temp, json_path_record):
     print("Processing segment...")
     if is_segment_empty(path_segments):
         print("No speech detected.")
@@ -81,18 +81,21 @@ def process_segment(asr_model, model_nllb, tokenizer_nllb, path_segments, path_r
     noise_reduction(path_segments, path_segments)
     print("Noise removed. Time:", time.time() - start_time)
     
+    
     # Transcription
     transcription = transcribe(asr_model, path_segments, target_lang)
-    if not transcription.strip():
-        print("No speech detected.")
-        return
+    #if not transcription.strip():
+    #    print("No speech detected.")
+    #    return
     
     # Translation
+    print("Translating...")
     translation = translate(model_nllb, tokenizer_nllb, transcription, target_lang)
     
     # Text-to-Speech
     # process_tts(tts_model, translation, path_segments, target_lang, path_results)
-    append_text_order("text.json",transcription, order, path_segments, path_results)
+    append_text_order(json_path_temp,translation, order, path_segments, path_results, "es" if target_lang == "spanish" else "en")
+    append_text_order(json_path_record,translation, order, path_segments, path_results, "es" if target_lang == "spanish" else "en", transcription)
 def transcribe(asr_model, path_segments, target_lang):
     start_time = time.time()
     transcription_func = {
@@ -130,7 +133,7 @@ def process_tts(tts_model, text, source_path, target_lang, result_path):
 
 
 
-def stream(asr_model, model_nllb, tokinizer_nllb, source_lang, target_lang):
+def stream(asr_model, model_nllb, tokinizer_nllb, source_lang, target_lang, json_file_temp, json_file_record):
     FORMAT = pyaudio.paInt16
     CHANNELS = 1
     RATE = 16000
@@ -162,7 +165,7 @@ def stream(asr_model, model_nllb, tokinizer_nllb, source_lang, target_lang):
             wf.setframerate(RATE)
             wf.writeframes(segment)
         
-        executor.submit(process_segment, asr_model, model_nllb, tokinizer_nllb, path_segements,path_results, target_lang, i)
+        executor.submit(process_segment, asr_model, model_nllb, tokinizer_nllb, path_segements,path_results, target_lang, i, json_file_temp, json_file_record)
 
     stream.stop_stream()
     stream.close()

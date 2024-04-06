@@ -45,25 +45,29 @@ def get_text_order(json_path, num_elements, ):
     order = data['order'][:num_elements]
     original_path = data['original_path'][:num_elements]
     path_to_save = data['path_to_save'][:num_elements]
+    language = data['language'][:num_elements]
     # remove the first elements
     data['text'] = data['text'][num_elements:]
     data['order'] = data['order'][num_elements:]
     data['original_path'] = data['original_path'][num_elements:]
     data['path_to_save'] = data['path_to_save'][num_elements:]
+    data['language'] = data['language'][num_elements:]
     # write the data back to the file
     with open(json_path, 'w') as f:
         json.dump(data, f)
     # make it return an array of arrays of text and order
-    result = [i for i in zip(text, order, original_path, path_to_save)]
+    result = [i for i in zip(text, order, original_path, path_to_save, language)]
     return result
 
-def append_text_order(json_path, text, order, original_path, path_to_save):
+def append_text_order(json_path, text, order, original_path, path_to_save, language, original_text=None):
     with open(json_path) as f:
         data = json.load(f)
     data['text'].append(text)
     data['order'].append(order)
     data['original_path'].append(original_path)
     data['path_to_save'].append(path_to_save)
+    data['language'].append(language)
+    data['original_text'].append(original_text)
     with open(json_path, 'w') as f:
         json.dump(data, f)
 # ----------------- StreamXTTSV2 -----------------
@@ -153,11 +157,13 @@ class StreamXTTSV2:
                 #text, order = get_text_order(texts)
                 #print(text, order)
                 futures = []
+                print(self.texts)
                 
-                
-                for text, i, path_a, path_s in self.texts:
+                for text, i, path_a, path_s, lang in self.texts:
                     #print(text, i, path)
-                    future = executor.submit(self.model.inference_stream, text, "en", self.gpt_cond_latent, self.speaker_embedding, stream_chunk_size=self.stream_chunk_size, speed=self.speed)
+                    print(f"Processing text {i}: {text}")
+                    print(f"Processing text {i}: {lang}")
+                    future = executor.submit(self.model.inference_stream, text, lang, self.gpt_cond_latent, self.speaker_embedding, stream_chunk_size=self.stream_chunk_size, speed=self.speed)
                     #print(future.result())
                     futures.append(future)
                     
