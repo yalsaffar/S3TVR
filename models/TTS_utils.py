@@ -186,3 +186,42 @@ def stream_prod(model, json_path, directory_path):
         stream_prod(model, json_path, directory_path)
     return "Streaming finished"
 
+
+def just_inference(model, original_path, output_dir, text, lang, order):
+    print("Inference...")
+    path_to_save = output_dir
+    t0 = time.time()
+    gpt_cond_latent, speaker_embedding = model.get_conditioning_latents(audio_path=[original_path])
+
+    chunks = model.inference_stream(
+        text,
+        lang,
+        gpt_cond_latent,
+        speaker_embedding,
+        stream_chunk_size= 15 ,
+        speed=0.95
+        #temperature=0.1,
+        #enable_text_splitting=True,
+    )
+    full_audio = torch.Tensor().to('cpu') 
+    wav_chuncks = []
+    for i, chunk in enumerate(chunks):
+        if i == 1:
+            time_to_first_chunk = time.time() - t0
+            print(f"Time to first chunck: {time_to_first_chunk}")
+        print(f"Received chunk {i} of audio length {chunk.shape[-1]}")
+        wav_chuncks.append(chunk)
+        full_audio = torch.cat((full_audio, chunk.squeeze().to('cpu')), dim=-1)
+    
+    # After accumulating, play the full audio
+    # sd.play(full_audio.numpy(), 24000, blocking=True)
+    
+    # Save the complete audio to a file
+    torchaudio.save(path_to_save, full_audio.unsqueeze(0), 24000)
+    #wav = torch.cat(wav_chuncks, dim=0)
+    #torchaudio.save(output_dir+"/segment_{order}.wav", wav.unsqueeze(0), 24000)
+    print("Inference finished")
+    return path_to_save, time_to_first_chunk
+    
+
+
