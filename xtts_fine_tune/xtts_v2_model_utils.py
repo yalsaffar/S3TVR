@@ -12,6 +12,21 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 def load_fine_tuned_xtts_v2(config_path, checkpoint_path, reference_audio_path):
+    """
+    Load the fine-tuned XTTS v2 model and compute speaker latents.
+
+    Args:
+        config_path (str): Path to the configuration file.
+            Example: "path/to/config.json"
+        checkpoint_path (str): Path to the checkpoint directory.
+            Example: "path/to/checkpoint/"
+        reference_audio_path (str): Path to the reference audio file.
+            Example: "path/to/reference.wav"
+
+    Returns:
+        tuple: A tuple containing the model, gpt_cond_latent, and speaker_embedding.
+            Example: (model, gpt_cond_latent, speaker_embedding)
+    """
     print("Loading model...")
     config = XttsConfig()
     config.load_json(config_path)
@@ -24,6 +39,24 @@ def load_fine_tuned_xtts_v2(config_path, checkpoint_path, reference_audio_path):
     return model, gpt_cond_latent, speaker_embedding
 
 def Inference(model, gpt_cond_latent, speaker_embedding,path_to_save,text, temperature=0.7):
+    """
+    Perform inference using the fine-tuned XTTS v2 model.
+
+    Args:
+        model (Xtts): The XTTS v2 model.
+            Example: model, gpt_cond_latent, speaker_embedding = load_fine_tuned_xtts_v2(config_path, checkpoint_path, reference_audio_path)
+        gpt_cond_latent (torch.Tensor): GPT conditioning latent vectors.
+        speaker_embedding (torch.Tensor): Speaker embedding vectors.
+        path_to_save (str): Path to save the generated audio.
+            Example: "path/to/output.wav"
+        text (str): The input text for synthesis.
+            Example: "Hello, world!"
+        temperature (float, optional): Sampling temperature. Default is 0.7.
+            Example: 0.7
+
+    Returns:
+        None
+    """
     print("Inference...")
     out = model.inference(
         text,
@@ -36,6 +69,27 @@ def Inference(model, gpt_cond_latent, speaker_embedding,path_to_save,text, tempe
 #model, gpt_cond_latent, speaker_embedding = load_fine_tuned_xtts_v2("C:/tmp/xtts_ft/run/training/GPT_XTTS_FT-April-02-2024_05+08PM-0000000/config.json", "C:/tmp/xtts_ft/run/training/GPT_XTTS_FT-April-02-2024_05+08PM-0000000/best_model_72.pth", "old_man_segments/wavs/segment_10.wav")
     
 class xtts_v2_Model():
+    """
+    A class to handle training of the XTTS v2 model.
+
+    Args:
+        train_csv_path (str): Path to the training CSV file.
+            Example: "path/to/train.csv"
+        eval_csv_path (str): Path to the evaluation CSV file.
+            Example: "path/to/eval.csv"
+        num_epochs (int): Number of training epochs.
+            Example: 10
+        batch_size (int): Size of each training batch.
+            Example: 4
+        grad_acumm (int): Gradient accumulation steps.
+            Example: 1
+        output_path (str): Path to save the trained model outputs.
+            Example: "path/to/output/"
+        max_audio_length (int): Maximum allowed length of audio for training in seconds.
+            Example: 10
+        language (str, optional): Language of the audio files, either 'en' for English or 'es' for Spanish. Default is "en".
+            Example: "en"
+    """
     def __init__(self, train_csv_path, eval_csv_path, num_epochs, batch_size, grad_acumm, output_path, max_audio_length, language="en"):
         self.train_csv_path = train_csv_path
         self.eval_csv_path = eval_csv_path
@@ -53,6 +107,13 @@ class xtts_v2_Model():
 
 
     def train_model(self):
+        """
+        Train the XTTS v2 model.
+
+        Returns:
+            tuple: A tuple containing a status message, config_path, vocab_file, fine-tuned XTTS checkpoint, and speaker wav file.
+                Example: ("Model training done!", "path/to/config.json", "path/to/vocab.json", "path/to/best_model.pth", "path/to/speaker.wav")
+        """
         #clear_gpu_cache()
         if not self.train_csv_path or not self.eval_csv_path:
             return "You need to run the data processing step or manually set `Train CSV` and `Eval CSV` fields !", "", "", "", ""

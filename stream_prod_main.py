@@ -3,6 +3,21 @@ from models.TTS_utils import load_manual_xtts_v2
 from models.TTS_utils import stream_prod
 
 def main(xtts_path, xtts_config_path, record_temp="record_temp.json", record_path="audio_segments/"):
+    """
+    Main function to load the xtts model and run the stream production.
+
+    Args:
+        xtts_path (str): Path to the xtts model file.
+            Example: "path/to/xtts_model.pt"
+        xtts_config_path (str): Path to the xtts configuration file.
+            Example: "path/to/xtts_config.json"
+        record_temp (str, optional): Path to the temporary record JSON file.
+            Default: "record_temp.json"
+            Example: "path/to/record_temp.json"
+        record_path (str, optional): Path to the directory where audio segments are recorded.
+            Default: "audio_segments/"
+            Example: "path/to/audio_segments/"
+    """
     xtts_v2_model = load_manual_xtts_v2(xtts_config_path, xtts_path)
     stream_prod(xtts_v2_model, record_temp, record_path)
 

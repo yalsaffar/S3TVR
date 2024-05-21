@@ -8,6 +8,33 @@ from models.TTS_utils import load_manual_xtts_v2
 from stream_VAD import stream
 
 def main(xtts_path, xtts_config_path, language="en", record_temp="record_temp.json", record_per="record_per.json", record_path="audio_segments/", result_dir="results", segments_dir="audio_segments"):
+    """
+    Main function to run the ASR stream and initiate the TTS stream production.
+
+    Args:
+        xtts_path (str): Path to the xtts model file.
+            Example: "path/to/xtts_model.pt"
+        xtts_config_path (str): Path to the xtts configuration file.
+            Example: "path/to/xtts_config.json"
+        language (str, optional): Language for the ASR model. Must be either 'en' for English or 'es' for Spanish.
+            Default: 'en'
+            Example: "en"
+        record_temp (str, optional): Path to the temporary record JSON file.
+            Default: "record_temp.json"
+            Example: "path/to/record_temp.json"
+        record_per (str, optional): Path to the periodic record JSON file.
+            Default: "record_per.json"
+            Example: "path/to/record_per.json"
+        record_path (str, optional): Path to the directory where audio segments are recorded.
+            Default: "audio_segments/"
+            Example: "path/to/audio_segments/"
+        result_dir (str, optional): Path to the directory where results are stored.
+            Default: "results"
+            Example: "path/to/results"
+        segments_dir (str, optional): Path to the directory where audio segments are stored.
+            Default: "audio_segments"
+            Example: "path/to/audio_segments"
+    """
     model_nllb, tokinizer_nllb = nllb()
 
     if language == "en":

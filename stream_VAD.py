@@ -14,20 +14,49 @@ from concurrent.futures import ThreadPoolExecutor
 import time
 from models.noise_red import noise_reduction
 class Frame(object):
-    """Represents a "frame" of audio data."""
+    """
+    Represents a "frame" of audio data.
+    
+    Args:
+        bytes (bytes): The audio data.
+        timestamp (float): The timestamp of the frame.
+        duration (float): The duration of the frame.
+    """
     def __init__(self, bytes, timestamp, duration):
         self.bytes = bytes
         self.timestamp = timestamp
         self.duration = duration
 
 def read_audio(stream, frame_duration_ms, rate):
-    """Generates audio frames from the input stream."""
+    """
+    Generates audio frames from the input stream.
+
+    Args:
+        stream (pyaudio.Stream): The audio stream.
+        frame_duration_ms (int): Duration of each frame in milliseconds.
+        rate (int): The sample rate of the audio.
+
+    Yields:
+        bytes: The audio frames.
+    """
     frames_per_buffer = int(rate * frame_duration_ms / 1000)
     while True:
         yield stream.read(frames_per_buffer)
 
 def vad_collector(sample_rate, frame_duration_ms, padding_duration_ms, vad, frames):
-    """Filters out non-voiced audio frames."""
+    """
+    Filters out non-voiced audio frames.
+
+    Args:
+        sample_rate (int): The sample rate of the audio.
+        frame_duration_ms (int): Duration of each frame in milliseconds.
+        padding_duration_ms (int): Duration of padding in milliseconds.
+        vad (webrtcvad.Vad): The VAD object.
+        frames (generator): A generator yielding audio frames.
+
+    Yields:
+        bytes: Voiced audio frames.
+    """
     num_padding_frames = int(padding_duration_ms / frame_duration_ms)
     ring_buffer = collections.deque(maxlen=num_padding_frames)
     triggered = False
@@ -57,6 +86,15 @@ def vad_collector(sample_rate, frame_duration_ms, padding_duration_ms, vad, fram
 
 
 def is_segment_empty(file_path):
+    """
+    Check if the audio segment is empty.
+
+    Args:
+        file_path (str): Path to the audio file.
+
+    Returns:
+        bool: True if the segment is empty, False otherwise.
+    """
     audio, _ = librosa.load(file_path)
     rms = librosa.feature.rms(y=audio)  # Pass the audio data as an argument
     rms_mean = np.mean(rms)
@@ -67,9 +105,22 @@ def is_segment_empty(file_path):
     else:
         return False
 
-# ...
 
 def process_segment(asr_model, model_nllb, tokenizer_nllb, path_segments, path_results, target_lang, order, json_path_temp, json_path_record):
+    """
+    Process an audio segment: noise reduction, transcription, translation, and append results.
+
+    Args:
+        asr_model: The ASR model for transcription.
+        model_nllb: The NLLB model for translation.
+        tokenizer_nllb: The tokenizer for the NLLB model.
+        path_segments (str): Path to the audio segment.
+        path_results (str): Path to save the results.
+        target_lang (str): Target language for translation.
+        order (int): Order index of the segment.
+        json_path_temp (str): Path to the temporary JSON file.
+        json_path_record (str): Path to the record JSON file.
+    """
     print("Processing segment...")
     if is_segment_empty(path_segments):
         print("No speech detected.")
@@ -97,6 +148,17 @@ def process_segment(asr_model, model_nllb, tokenizer_nllb, path_segments, path_r
     append_text_order(json_path_temp,translation, order, path_segments, path_results, "es" if target_lang == "spanish" else "en")
     append_text_order(json_path_record,translation, order, path_segments, path_results, "es" if target_lang == "spanish" else "en", transcription)
 def transcribe(asr_model, path_segments, target_lang):
+    """
+    Transcribe an audio segment using the specified ASR model.
+
+    Args:
+        asr_model: The ASR model for transcription.
+        path_segments (str): Path to the audio segment.
+        target_lang (str): Target language for transcription.
+
+    Returns:
+        str: The transcription of the audio segment.
+    """
     start_time = time.time()
     transcription_func = {
         "spanish": parakeet_ctc_process,
@@ -108,6 +170,18 @@ def transcribe(asr_model, path_segments, target_lang):
     return transcription[0]
 
 def translate(model_nllb, tokenizer_nllb, text, target_lang):
+    """
+    Translate text using the specified NLLB model and tokenizer.
+
+    Args:
+        model_nllb: The NLLB model for translation.
+        tokenizer_nllb: The tokenizer for the NLLB model.
+        text (str): The text to translate.
+        target_lang (str): Target language for translation.
+
+    Returns:
+        str: The translated text.
+    """
     print("Processing translation...")
     start_time = time.time()
     translation = nllb_translate(model_nllb, tokenizer_nllb, text, target_lang)
@@ -115,25 +189,27 @@ def translate(model_nllb, tokenizer_nllb, text, target_lang):
     print("Translation time:", time.time() - start_time)
     return translation
 
-"""
-def process_tts(tts_model, text, source_path, target_lang, result_path):
-    print("Processing TTS...")
-    start_time = time.time()
-    lang_code = {"spanish": "es", "english": "en"}[target_lang]
-    tts_mutli_process(tts_model, text, source_path, lang_code, result_path)
-    print("TTS done. Time:", time.time() - start_time)
-"""
 
-
-    
-
-# ...
 
 
 
 
 
 def stream(asr_model, model_nllb, tokinizer_nllb, source_lang, target_lang, json_file_temp, json_file_record,result_dir = "results",segments_dir = "audio_segments"):
+    """
+    Stream audio input, process segments, and save the results.
+
+    Args:
+        asr_model: The ASR model for transcription.
+        model_nllb: The NLLB model for translation.
+        tokinizer_nllb: The tokenizer for the NLLB model.
+        source_lang (str): Source language of the audio.
+        target_lang (str): Target language for translation.
+        json_file_temp (str): Path to the temporary JSON file.
+        json_file_record (str): Path to the record JSON file.
+        result_dir (str, optional): Directory to save the results. Default is "results".
+        segments_dir (str, optional): Directory to save the audio segments. Default is "audio_segments".
+    """
     FORMAT = pyaudio.paInt16
     CHANNELS = 1
     RATE = 16000
@@ -146,8 +222,7 @@ def stream(asr_model, model_nllb, tokinizer_nllb, source_lang, target_lang, json
     frames = read_audio(stream, CHUNK_DURATION_MS, RATE)
     frames = (Frame(f, None, None) for f in frames)
 
-    #segments_dir = "audio_segments"
-    #result_dir = "results"
+ 
     if not os.path.exists(segments_dir):
         os.makedirs(segments_dir)
     if not os.path.exists(result_dir):
