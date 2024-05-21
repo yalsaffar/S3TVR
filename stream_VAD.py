@@ -133,7 +133,7 @@ def process_tts(tts_model, text, source_path, target_lang, result_path):
 
 
 
-def stream(asr_model, model_nllb, tokinizer_nllb, source_lang, target_lang, json_file_temp, json_file_record):
+def stream(asr_model, model_nllb, tokinizer_nllb, source_lang, target_lang, json_file_temp, json_file_record,result_dir = "results",segments_dir = "audio_segments"):
     FORMAT = pyaudio.paInt16
     CHANNELS = 1
     RATE = 16000
@@ -146,8 +146,8 @@ def stream(asr_model, model_nllb, tokinizer_nllb, source_lang, target_lang, json
     frames = read_audio(stream, CHUNK_DURATION_MS, RATE)
     frames = (Frame(f, None, None) for f in frames)
 
-    segments_dir = "audio_segments"
-    result_dir = "results"
+    #segments_dir = "audio_segments"
+    #result_dir = "results"
     if not os.path.exists(segments_dir):
         os.makedirs(segments_dir)
     if not os.path.exists(result_dir):

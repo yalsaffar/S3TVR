@@ -14,3 +14,16 @@ streamxttsv2.py
 pg.ipynb
 output.wav
 resampled_audio.wav
+test_speakers
+pg2.ipynb
+pgggg.ipynb
+metric_embeddings.ipynb
+f_segments.csv
+metrics/
+metrics.ipynb
+not_used_models/
+cluster_model_training.ipynb
+demo/
+test/
+main.ipynb
+main_stream.ipynb
