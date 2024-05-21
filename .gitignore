@@ -1,12 +1,11 @@
 __pycache__/
 .vscode/
 xtts_fine_tune/old_man_segments/
-audio_segments/*
+audio_segments/* .wav
 !audio_segments/.gitignore
-results/*
+results/* .wav
 !results/.gitignore
-test/*
-!test/.gitignore
+
 
 thesis2.drawio.png
 metrics/originals_en/
