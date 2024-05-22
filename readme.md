@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Seamless Speech-to-Speech Translation with Voice Replication (S3TVR) is an advanced AI cascaded model designed for real-time speech-to-speech translation while maintaining the speaker's voice characteristics. This project balances latency and output quality, focusing on English and Spanish languages, and involves multiple open-source models and algorithms. The system is optimized for local execution, allowing for dynamic and efficient voice translation.
+Seamless Speech-to-Speech Translation with Voice Replication (S3TVR) is an advanced AI cascaded feamework designed for real-time speech-to-speech translation while maintaining the speaker's voice characteristics. This project balances latency and output quality, focusing on English and Spanish languages, and involves multiple open-source models and algorithms. The system is optimized for local execution, allowing for dynamic and efficient voice translation.
 
 ## Technologies and Framework
 
@@ -19,6 +19,7 @@ Seamless Speech-to-Speech Translation with Voice Replication (S3TVR) is an advan
 - [ ]  Clustered fine-tuned XTTS_V2: SOON
 - [x]  Fine-tuning XTTS_V2 structure
 - [ ]  Fine-tuned XTTS_V2 Automatic integration: SOON
+- [ ]  Models direct downloading: SOON
 
 ## Installation Instructions
 
