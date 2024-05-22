@@ -5,6 +5,9 @@
 
 Seamless Speech-to-Speech Translation with Voice Replication (S3TVR) is an advanced AI cascaded feamework designed for real-time speech-to-speech translation while maintaining the speaker's voice characteristics. This project balances latency and output quality, focusing on English and Spanish languages, and involves multiple open-source models and algorithms. The system is optimized for local execution, allowing for dynamic and efficient voice translation.
 
+
+<img src="https://github.com/yalsaffar/S3TVR/blob/master/workflow.gif" width="600" height="400" />
+
 ## Technologies and Framework
 
 1. **Voice Activity Detection (VAD):** Differentiates speech from silence for efficient segmentation.
