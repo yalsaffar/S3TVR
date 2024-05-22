@@ -3,7 +3,7 @@
 
 ## Project Overview
 
-Seamless Speech-to-Speech Translation with Voice Replication (S3TVR) is an advanced AI cascaded feamework designed for real-time speech-to-speech translation while maintaining the speaker's voice characteristics. This project balances latency and output quality, focusing on English and Spanish languages, and involves multiple open-source models and algorithms. The system is optimized for local execution, allowing for dynamic and efficient voice translation.
+**Seamless Speech-to-Speech Translation with Voice Replication (S3TVR)** is an advanced AI cascaded feamework designed for real-time speech-to-speech translation while maintaining the speaker's voice characteristics in a **Zero-shot** fashion. This project balances latency and output quality, focusing on **English** and **Spanish** languages, and involves multiple open-source models and algorithms. The system is optimized for local execution, allowing for dynamic and efficient voice translation with an **average latency of ~ 3 seconds per sentence**. 
 
 
 <div align="center">
@@ -27,9 +27,18 @@ Seamless Speech-to-Speech Translation with Voice Replication (S3TVR) is an advan
 - [ ]  Fine-tuned XTTS_V2 Automatic integration: SOON
 - [ ]  Models direct downloading: SOON
 
+## Hardware Specifications and Python Versions
+
+- **NVIDIA GPU**: The system is tested with an NVIDIA GPU that supports CUDA, specifically on CUDA 12.1. 
+  - Note: If you are running this model on Windows, higher versions of CUDA may not be supported by DeepSpeed. Please refer to the official DeepSpeed tutorial for further information.
+- **Memory**: A minimum of 16 GB of RAM is necessary to handle the model's computational requirements efficiently.
+- **Python Version**: The model framework is designed to be compatible with Python 3 and above. 
+  - Note: Specific libraries might require certain versions. For best compatibility and performance, the framework has been tested on Python 3.11.7.
+
+
 ## Installation Instructions
 
-1. **Create a New Conda Environment:**
+**Create a New Conda Environment:**
 
 ```bash
 conda create --name s3tvr_env python=3.8
@@ -47,19 +56,19 @@ pip install -r requirements.txt
 - For Windows users, [follow this tutorial](https://github.com/microsoft/DeepSpeed/issues/4729).
 
 ## TTS Installation:
-- for TTS advanced installation, follow the [installation guide](https://github.com/coqui-ai/TTS) in their repo.
+- for TTS advanced installation, follow the [installation guide](https://github.com/coqui-ai/TTS?tab=readme-ov-file#installation) in their repo.
 
 
 ## Models Used and Adding New Models
 
 The project utilizes several models for different tasks, including:
 - **Automatic Speech Recognition (ASR):**
-  - Parakeet CTC 1.1 B Model
-  - STT Es FastConformer Hybrid Transducer-CTC Large P&C Model
+  - [Parakeet CTC 1.1 B Model](https://huggingface.co/nvidia/parakeet-ctc-1.1b) (by Nvidia)
+  - [STT Es FastConformer Hybrid Transducer-CTC Large P&C Model](https://catalog.ngc.nvidia.com/orgs/nvidia/teams/nemo/models/stt_es_fastconformer_hybrid_large_pc) (by Nvidia)
 - **Machine Translation (MT):**
-  - NLLB-200
+  - [NLLB-200](https://huggingface.co/facebook/nllb-200-1.3B) (by Meta)
 - **Text-to-Speech (TTS):**
-  - XTTS V2
+  - [XTTS V2](https://huggingface.co/coqui/XTTS-v2) (by Coqui)
 
 Each model is stored in the `models` folder. To add a new model:
 1. Place the model files in the `models` folder.
@@ -79,8 +88,13 @@ def process_input(model, input_data):
 ```
 
 ## XTTS_V2 Model
-- Manual Download: XTTS_V2 needs to be downloaded manually and passed to the main workflow.
-- Using TTS API: Implemented methods can use TTS API with necessary workflow modifications.
+1. Manual Download: XTTS_V2 needs to be downloaded manually and passed to the main workflow.
+2. Or the model weights could be downloaded automaticlly from hugging face by running the following file:
+``` bash
+python xtts_v2_download.py
+```
+
+Using TTS API: Implemented methods can use TTS API with necessary workflow modifications.
 
 
 ## Running the S3TVR Cascaded Framework
@@ -135,6 +149,13 @@ To provide a comprehensive evaluation, the S3TVR Framework is compared against t
 | **Translation Quality (BLEU Score)** | 0.36                        | 0.41                        | 0.198 to 0.203 depending on threshold |
 | **Flexibility**               | High: Modular design allows easy updates | High: Modular design allows easy updates | Less modular, more rigid design  |
 | **Resource Efficiency**       | Optimized for local execution | Optimized for local execution | Requires more computational resources, less optimized for local execution |
+
+### Models Training and Biases
+
+Each of the models integrated into the S3TVR framework is of course trained on different datasets and may have inherent biases based on their respective training data. S3TVR itself does not alter these models but serves as a framework to make them work together in an optimized structure, ensuring efficient and seamless speech-to-speech translation.
+### Contributions and Feedback
+
+I am more than happy to receive suggestions, pull requests, and constructive criticism. Your feedback is invaluable in improving the S3TVR framework. If you have any ideas, encounter issues, or want to contribute to the project, please feel free to submit a pull request or open an issue.
 
 
 ## Acknowledgments
