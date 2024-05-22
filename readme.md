@@ -1,3 +1,4 @@
+
 # Seamless Speech-to-Speech Translation with Voice Replication (S3TVR)
 
 ## Project Overview
@@ -14,7 +15,7 @@ Seamless Speech-to-Speech Translation with Voice Replication (S3TVR) is an advan
 
 ## Checklist
 
-- [x]  Zero-shot speech to speech translation with voice replication
+- [x]  Zero-shot speech-to-speech translation with voice replication
 - [ ]  MultiLingual: SOON
 - [ ]  Clustered fine-tuned XTTS_V2: SOON
 - [x]  Fine-tuning XTTS_V2 structure
