@@ -6,7 +6,9 @@
 Seamless Speech-to-Speech Translation with Voice Replication (S3TVR) is an advanced AI cascaded feamework designed for real-time speech-to-speech translation while maintaining the speaker's voice characteristics. This project balances latency and output quality, focusing on English and Spanish languages, and involves multiple open-source models and algorithms. The system is optimized for local execution, allowing for dynamic and efficient voice translation.
 
 
-<img src="https://github.com/yalsaffar/S3TVR/blob/master/workflow.gif" width="600" height="400" />
+<div align="center">
+  <img src="https://github.com/yalsaffar/S3TVR/blob/master/workflow.gif" width="600" height="400" />
+</div>
 
 ## Technologies and Framework
 
@@ -81,8 +83,8 @@ def process_input(model, input_data):
 - Using TTS API: Implemented methods can use TTS API with necessary workflow modifications.
 
 
-## Running the S3TVR Cascaded Model
-To run the model, use the following command:
+## Running the S3TVR Cascaded Framework
+To run the Framework, use the following command:
 
 
 ``` bash
@@ -103,7 +105,7 @@ This project is part of my bachelor's thesis for Computer Science and Artificial
 
 ## Latency Performance
 
-Latency is a critical metric for evaluating the efficiency of real-time speech-to-speech translation systems. The S3TVR model has been benchmarked for both English and Spanish translations, providing insights into its performance under various conditions. The following table summarizes the average, best-case, and worst-case latencies recorded for the model:
+Latency is a critical metric for evaluating the efficiency of real-time speech-to-speech translation systems. The S3TVR Framework has been benchmarked for both English and Spanish translations, providing insights into its performance under various conditions. The following table summarizes the average, best-case, and worst-case latencies recorded for the Framework:
 
 | Metric      | English       | Spanish       |
 |-------------|---------------|---------------|
@@ -111,9 +113,9 @@ Latency is a critical metric for evaluating the efficiency of real-time speech-t
 | **Best Case** | 1.92 seconds  | 1.88 seconds  |
 | **Worst Case** | 6.95 seconds  | 7.95 seconds  |
 
-## Model Characteristics
+## Framework Characteristics
 
-Understanding the inherent characteristics of the S3TVR model is essential for appreciating its adaptability and performance in different scenarios. The table below outlines key features of the model, including its adaptability, customizability, latency control, and resource efficiency. These features highlight the model's design philosophy and its suitability for various applications:
+Understanding the inherent characteristics of the S3TVR Framework is essential for appreciating its adaptability and performance in different scenarios. The table below outlines key features of the Framework, including its adaptability, customizability, latency control, and resource efficiency. These features highlight the Framework's design philosophy and its suitability for various applications:
 
 | Feature           | Details                                                                              |
 |-------------------|--------------------------------------------------------------------------------------|
@@ -124,9 +126,9 @@ Understanding the inherent characteristics of the S3TVR model is essential for a
 
 ## Comparison with Seamless Streaming Model
 
-To provide a comprehensive evaluation, the S3TVR model is compared against the Seamless Streaming model. This comparison focuses on key performance indicators such as latency, memory usage, translation quality, flexibility, and resource efficiency. By examining these aspects, we can understand the strengths and limitations of each model, guiding potential improvements and use-case considerations:
+To provide a comprehensive evaluation, the S3TVR Framework is compared against the Seamless Streaming model. This comparison focuses on key performance indicators such as latency, memory usage, translation quality, flexibility, and resource efficiency. By examining these aspects, we can understand the strengths and limitations of each model, guiding potential improvements and use-case considerations:
 
-| Feature                       | S3TVR Model (English)       | S3TVR Model (Spanish)       | Seamless Streaming Model           |
+| Feature                       | S3TVR Framework (English)       | S3TVR Framework  (Spanish)       | Seamless Streaming Model           |
 |-------------------------------|-----------------------------|-----------------------------|------------------------------------|
 | **Latency**                   | Average: 3.09 seconds       | Average: 3.27 seconds       | 4.59 to 4.73 seconds depending on threshold settings |
 | **Memory Usage**              | 5618 MB                     | 3641 MB                     | Large: 2326 MB, Medium: 1151 MB    |
