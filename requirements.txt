@@ -13,7 +13,7 @@ torch==2.2.2+cu121
 torchaudio==2.2.2+cu121
 transformers==4.36.2
 TTS==0.22.0
-TTS==0.22.0
+huggingface_hub
 webrtcvad==2.0.10
 deepspeed==0.8.3
 ~ransformers==4.38.0.dev0
