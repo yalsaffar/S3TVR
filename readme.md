@@ -26,6 +26,7 @@
 - [x]  Fine-tuning XTTS_V2 structure
 - [ ]  Fine-tuned XTTS_V2 Automatic integration: SOON
 - [ ]  Models direct downloading: SOON
+- [ ]  HuggingFace Space: SOON
 
 ## Hardware Specifications and Python Versions
 
